@@ -23,47 +23,42 @@
         .cookie-modal {
             width: 100%;
             background-color: #4a1f9a; /* Twitch purple */
-            /* START HIDING BY DEFAULT AND HIDE THE OVERFLOW */
-            max-height: 0;
-            padding: 0;
-            opacity: 0;
-            overflow: hidden;
-            /* END HIDING BY DEFAULT */
+            /* REMOVED default padding and height to allow 'hidden' style to completely collapse it */
+            padding: 0; 
+            min-height: 0;
+            
             display: flex;
             justify-content: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease-out; 
             min-width: 100%; 
-        }
-        
-        /* NEW: Class to make the cookie section VISIBLE */
-        .cookie-modal.visible {
-            max-height: 300px; /* Needs a defined max-height for CSS transition */
-            padding: 40px 0;
-            opacity: 1;
+            
+            /* ADDED: Initial hiding by default */
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
             margin-bottom: 0;
         }
-
-        /* Class to push the login container up when the banner is hidden */
-        .cookie-modal.visible + .login-container {
-            margin-top: 50px; 
+        
+        /* NEW: Class to SHOW the cookie section */
+        .cookie-modal.visible {
+            opacity: 1;
+            max-height: 250px; /* An estimated height large enough to show content */
+            padding: 40px 0; /* Restore original padding */
+            margin-bottom: 50px; /* Add spacing back for the content below */
         }
-        /* Adjusted initial position of login-container */
-        .login-container {
-            width: 90%;
-            max-width: 320px; 
-            padding: 40px 20px;
-            margin-top: 0; /* Start at 0 margin, will be pushed by the banner */
-            text-align: left;
-            transition: margin-top 0.3s ease-out; 
+
+        /* NEW: Rule to push the login container down when the banner is visible */
+        .cookie-modal.visible + .login-container {
+            margin-top: 0; /* Reset margin that was used to create space */
         }
 
         .cookie-content {
-            width: 100%; 
+            width: 100%; /* Take up full width of parent (center) */
             max-width: 450px; 
             text-align: left;
-            padding: 0 5%; 
-            box-sizing: border-box; 
+            padding: 0 5%; /* ADDED: Padding on the sides for spacing */
+            box-sizing: border-box; /* Include padding in the element's total width */
         }
 
         .cookie-title {
@@ -87,6 +82,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
+            /* Forcing buttons to stack vertically below the text */
             display: block; 
             width: 100%;
             box-sizing: border-box;
@@ -94,9 +90,9 @@
         }
 
         .opt-out {
-            background-color: #9146ff; 
+            background-color: #9146ff; /* Primary Twitch button color */
             color: #ffffff;
-            margin-right: 0; 
+            margin-right: 0;
         }
 
         .opt-out:hover {
@@ -104,7 +100,7 @@
         }
 
         .proceed {
-            background-color: #ffffff; 
+            background-color: #ffffff; /* White background for "Proceed" */
             color: #1f1f23;
         }
 
@@ -112,7 +108,23 @@
             background-color: #f0f0f0;
         }
 
-        /* Login Form Section (Original styles maintained) */
+        /* Login Form Section */
+        .login-container {
+            width: 90%;
+            max-width: 320px; 
+            padding: 40px 20px;
+            /* REMOVED default 50px margin-top as the banner handles spacing */
+            margin-top: 0; 
+            text-align: left;
+            transition: margin-top 0.3s ease-out;
+        }
+        
+        /* Fallback for visibility (in case JS fails to add 'visible') */
+        .cookie-modal:not(.visible) + .login-container {
+             margin-top: 50px; /* Add some space if the banner is hidden */
+        }
+
+
         .login-title {
             font-size: 1.8rem;
             margin-bottom: 25px;
@@ -227,29 +239,38 @@
     </div>
 
     <script>
-        // Function to show the banner
-        function showBanner() {
-            const cookieBanner = document.getElementById('cookie-banner');
-            cookieBanner.classList.add('visible');
-            cookieBanner.classList.remove('hidden');
-        }
-
-        // Function to hide the banner
-        function hideBanner() {
-            const cookieBanner = document.getElementById('cookie-banner');
-            cookieBanner.classList.add('hidden');
-            cookieBanner.classList.remove('visible');
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             const passwordField = document.getElementById('password');
             const passwordToggle = document.querySelector('.password-toggle');
+            const cookieBanner = document.getElementById('cookie-banner');
             const proceedButton = document.getElementById('proceed-button');
+            const delay = 3000; // 3000 milliseconds = 3 seconds
 
-            // --- 1. Initial 3-second delay on page load (NEW) ---
-            setTimeout(showBanner, 3000); 
+            /**
+             * Shows the cookie banner by adding the 'visible' class.
+             */
+            function showCookieBanner() {
+                // Ensure it's hidden before adding the visible class
+                cookieBanner.classList.remove('hidden'); 
+                cookieBanner.classList.add('visible');
+            }
 
-            // --- Password Toggle Logic (Previous functionality) ---
+            /**
+             * Hides the cookie banner and sets a timer to show it again.
+             */
+            function hideCookieBanner() {
+                cookieBanner.classList.remove('visible');
+                cookieBanner.classList.add('hidden');
+
+                // Schedule the banner to reappear after 3 seconds
+                setTimeout(showCookieBanner, delay);
+            }
+
+            // --- Initial Delay (NEW) ---
+            // 1. Show the banner 3 seconds after the page loads
+            setTimeout(showCookieBanner, delay);
+
+            // --- Password Toggle Logic ---
             if (passwordToggle && passwordField) {
                 passwordToggle.addEventListener('click', () => {
                     const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -263,16 +284,13 @@
                 });
             }
 
-            // --- 2. Cookie Banner Close/Reappear Logic (UPDATED) ---
-            if (proceedButton) {
+            // --- Cookie Banner Close and Reappear Logic (UPDATED) ---
+            if (proceedButton && cookieBanner) {
                 proceedButton.addEventListener('click', (event) => {
                     event.preventDefault(); 
                     
-                    // Hide the banner immediately
-                    hideBanner();
-
-                    // Wait 3 seconds, then show it again
-                    setTimeout(showBanner, 3000); 
+                    // Call the function to hide the banner and set the timer
+                    hideCookieBanner();
                 });
             }
         });
