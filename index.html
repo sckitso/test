@@ -28,7 +28,6 @@
             justify-content: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease-out; 
-            /* Added min-width to ensure it fills the whole screen even if content is small */
             min-width: 100%; 
         }
 
@@ -47,12 +46,12 @@
         }
 
         .cookie-content {
-            /* ADJUSTMENT: Use percentage for small screens and max-width for large screens */
-            width: 90%; 
+            /* ADJUSTMENT: Fixed centering by setting width and padding */
+            width: 100%; /* Take up full width of parent (center) */
             max-width: 450px; 
             text-align: left;
-            /* Added margin auto for centering on smaller screens if width < 100% */
-            margin: 0 auto;
+            padding: 0 5%; /* ADDED: Padding on the sides for spacing */
+            box-sizing: border-box; /* Include padding in the element's total width */
         }
 
         .cookie-title {
@@ -76,27 +75,17 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
-        }
-        
-        /* NEW: Grouping button styling for mobile adjustment */
-        .cookie-content .btn {
-            display: inline-block; /* Ensure buttons stay side-by-side */
-        }
-        
-        /* ADJUSTMENT: Make buttons stack if the screen is very small */
-        @media (max-width: 400px) {
-            .cookie-content .btn {
-                display: block; /* Stack buttons vertically */
-                width: 100%;
-                margin-top: 10px;
-                margin-right: 0 !important; /* Override inline margin */
-            }
+            /* ADDED: Forcing buttons to stack vertically below the text */
+            display: block; 
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
         }
 
         .opt-out {
             background-color: #9146ff; /* Primary Twitch button color */
             color: #ffffff;
-            margin-right: 15px;
+            margin-right: 0; /* REMOVED: old side margin */
         }
 
         .opt-out:hover {
@@ -114,11 +103,10 @@
 
         /* Login Form Section */
         .login-container {
-            /* ADJUSTMENT: Use percentage for fluid width, centered in the screen */
             width: 90%;
             max-width: 320px; 
             padding: 40px 20px;
-            margin-top: 50px; /* Spacing below the modal */
+            margin-top: 50px; 
             text-align: left;
             transition: margin-top 0.3s ease-out;
         }
@@ -139,14 +127,14 @@
         .input-group {
             display: flex;
             align-items: center;
-            background-color: #0e0e10; /* Darker input background */
-            border: 2px solid #636368; /* Light gray border */
+            background-color: #0e0e10; 
+            border: 2px solid #636368; 
             border-radius: 4px;
             margin-bottom: 20px;
         }
 
         .input-group:focus-within {
-            border-color: #9146ff; /* Highlight border on focus */
+            border-color: #9146ff; 
         }
 
         .login-form input {
@@ -163,7 +151,7 @@
         .password-toggle {
             padding: 0 10px;
             cursor: pointer;
-            color: #adadb8; /* Light gray icon color */
+            color: #adadb8; 
             height: 20px; 
             display: flex;
             align-items: center;
@@ -190,7 +178,7 @@
         .signup-text {
             margin-top: 30px;
             font-size: 0.9rem;
-            color: #adadb8; /* Light gray text color */
+            color: #adadb8; 
             line-height: 1.4;
             text-align: center;
         }
