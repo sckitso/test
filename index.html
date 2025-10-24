@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitch Login Clone - Responsive</title>
+    <title>Twitch Login Clone</title>
     <style>
-        /* Base Styles (Desktop/Tablet) */
+        /* General reset and body styles */
         body {
             background-color: #18181b; /* Dark background */
             color: #ffffff;
@@ -28,10 +28,11 @@
             justify-content: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease-out; 
-            box-sizing: border-box; /* Ensures padding is inside the width */
+            /* Added min-width to ensure it fills the whole screen even if content is small */
+            min-width: 100%; 
         }
 
-        /* Class to hide the cookie section */
+        /* NEW: Class to hide the cookie section */
         .cookie-modal.hidden {
             opacity: 0;
             max-height: 0;
@@ -40,14 +41,18 @@
             margin-bottom: 0;
         }
         
-        /* Class to push the login container up when the banner is hidden */
+        /* NEW: Class to push the login container up when the banner is hidden */
         .cookie-modal.hidden + .login-container {
             margin-top: 0; 
         }
 
         .cookie-content {
+            /* ADJUSTMENT: Use percentage for small screens and max-width for large screens */
+            width: 90%; 
             max-width: 450px; 
             text-align: left;
+            /* Added margin auto for centering on smaller screens if width < 100% */
+            margin: 0 auto;
         }
 
         .cookie-title {
@@ -72,9 +77,24 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
+        
+        /* NEW: Grouping button styling for mobile adjustment */
+        .cookie-content .btn {
+            display: inline-block; /* Ensure buttons stay side-by-side */
+        }
+        
+        /* ADJUSTMENT: Make buttons stack if the screen is very small */
+        @media (max-width: 400px) {
+            .cookie-content .btn {
+                display: block; /* Stack buttons vertically */
+                width: 100%;
+                margin-top: 10px;
+                margin-right: 0 !important; /* Override inline margin */
+            }
+        }
 
         .opt-out {
-            background-color: #9146ff;
+            background-color: #9146ff; /* Primary Twitch button color */
             color: #ffffff;
             margin-right: 15px;
         }
@@ -84,7 +104,7 @@
         }
 
         .proceed {
-            background-color: #ffffff;
+            background-color: #ffffff; /* White background for "Proceed" */
             color: #1f1f23;
         }
 
@@ -94,13 +114,13 @@
 
         /* Login Form Section */
         .login-container {
-            max-width: 320px;
+            /* ADJUSTMENT: Use percentage for fluid width, centered in the screen */
+            width: 90%;
+            max-width: 320px; 
             padding: 40px 20px;
-            margin-top: 50px;
+            margin-top: 50px; /* Spacing below the modal */
             text-align: left;
             transition: margin-top 0.3s ease-out;
-            width: 100%; /* Allows it to take full width on smaller screens */
-            box-sizing: border-box; 
         }
 
         .login-title {
@@ -119,14 +139,14 @@
         .input-group {
             display: flex;
             align-items: center;
-            background-color: #0e0e10;
-            border: 2px solid #636368;
+            background-color: #0e0e10; /* Darker input background */
+            border: 2px solid #636368; /* Light gray border */
             border-radius: 4px;
             margin-bottom: 20px;
         }
 
         .input-group:focus-within {
-            border-color: #9146ff;
+            border-color: #9146ff; /* Highlight border on focus */
         }
 
         .login-form input {
@@ -143,8 +163,8 @@
         .password-toggle {
             padding: 0 10px;
             cursor: pointer;
-            color: #adadb8; 
-            height: 20px;
+            color: #adadb8; /* Light gray icon color */
+            height: 20px; 
             display: flex;
             align-items: center;
         }
@@ -170,44 +190,9 @@
         .signup-text {
             margin-top: 30px;
             font-size: 0.9rem;
-            color: #adadb8;
+            color: #adadb8; /* Light gray text color */
             line-height: 1.4;
             text-align: center;
-        }
-
-        /* =========================================================
-        RESPONSIVE STYLES (Mobile Adjustment) 
-        - Applied when the screen is 600px wide or less
-        =========================================================
-        */
-        @media (max-width: 600px) {
-            /* Adjust the cookie content for smaller screens */
-            .cookie-content {
-                max-width: 90%; /* Use most of the screen width */
-                padding: 0 15px; /* Add internal padding to prevent hitting edges */
-                text-align: center; /* Center the text on mobile */
-            }
-
-            .cookie-text {
-                font-size: 0.9rem; /* Slightly smaller text for the long paragraph */
-            }
-
-            /* Stack the buttons vertically on smaller screens */
-            .cookie-content .btn {
-                display: block; /* Make buttons take full width */
-                width: 100%;
-                margin: 10px 0 0; /* Add vertical margin for spacing */
-            }
-            
-            .opt-out {
-                margin-right: 0; /* Remove right margin when stacked */
-            }
-            
-            /* Center the login container on small screens */
-            .login-container {
-                max-width: 90%; 
-                margin-top: 30px; 
-            }
         }
     </style>
 </head>
@@ -256,6 +241,7 @@
             const passwordField = document.getElementById('password');
             const passwordToggle = document.querySelector('.password-toggle');
             
+            // Get the elements for the cookie banner functionality
             const cookieBanner = document.getElementById('cookie-banner');
             const proceedButton = document.getElementById('proceed-button');
 
@@ -277,6 +263,8 @@
             if (proceedButton && cookieBanner) {
                 proceedButton.addEventListener('click', (event) => {
                     event.preventDefault(); 
+                    
+                    // Add the 'hidden' class to trigger the CSS hiding
                     cookieBanner.classList.add('hidden');
                 });
             }
