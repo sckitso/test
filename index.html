@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Login Clone</title>
+    <style>
+        /* General reset and body styles */
+        body {
+            background-color: #18181b; /* Dark background */
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            /* Added transition for smooth closing */
+            transition: margin-top 0.3s ease-out;
+        }
+
+        /* Cookie Modal Section (The Large Purple Bar) */
+        .cookie-modal {
+            width: 100%;
+            background-color: #4a1f9a; /* Twitch purple */
+            padding: 40px 0;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* Added transition for smooth closing */
+            transition: all 0.3s ease-out; 
+        }
+
+        /* NEW: Class to hide the cookie section */
+        .cookie-modal.hidden {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+        
+        /* NEW: Class to push the login container up when the banner is hidden */
+        .cookie-modal.hidden + .login-container {
+            margin-top: 0; 
+        }
+
+        .cookie-content {
+            max-width: 450px; /* Based on perceived width in the screenshot */
+            text-align: left;
+        }
+
+        .cookie-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .cookie-text {
+            color: #dedede;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        /* Buttons in the Cookie Modal */
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .opt-out {
+            background-color: #9146ff; /* Primary Twitch button color */
+            color: #ffffff;
+            margin-right: 15px;
+        }
+
+        .opt-out:hover {
+            background-color: #772ce8;
+        }
+
+        .proceed {
+            background-color: #ffffff; /* White background for "Proceed" */
+            color: #1f1f23;
+        }
+
+        .proceed:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Login Form Section */
+        .login-container {
+            max-width: 320px; /* Standard width for a form of this style */
+            padding: 40px 20px;
+            margin-top: 50px; /* Spacing below the modal */
+            text-align: left;
+            transition: margin-top 0.3s ease-out; /* Added transition for smooth movement */
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+
+        .login-form label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            background-color: #0e0e10; /* Darker input background */
+            border: 2px solid #636368; /* Light gray border */
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .input-group:focus-within {
+            border-color: #9146ff; /* Highlight border on focus */
+        }
+
+        .login-form input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* Password Toggle Icon Styling */
+        .password-toggle {
+            padding: 0 10px;
+            cursor: pointer;
+            color: #adadb8; /* Light gray icon color */
+            height: 20px; /* To match the size of the icon */
+            display: flex;
+            align-items: center;
+        }
+
+        .password-toggle svg {
+            display: block;
+        }
+
+        /* Login Button */
+        .log-in {
+            width: 100%;
+            background-color: #9146ff;
+            color: #ffffff;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .log-in:hover {
+            background-color: #772ce8;
+        }
+
+        /* Signup Text */
+        .signup-text {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #adadb8; /* Light gray text color */
+            line-height: 1.4;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cookie-modal" id="cookie-banner">
+        <div class="cookie-content">
+            <h2 class="cookie-title">Cookies and Advertising Choices</h2>
+            <p class="cookie-text">
+                We work with trusted partners to provide relevant advertising based on information about your use of Twitch and third-party websites and applications. If you want to learn more about our advertising practices and your rights to opt-out, click the "Opt-Out Preferences" button to the right or use the navigation menu at the top of the page.
+            </p>
+            <button class="btn opt-out">Opt-out Preferences</button>
+            <button class="btn proceed" id="proceed-button">Proceed</button>
+        </div>
+    </div>
+
+    <div class="login-container">
+        <h2 class="login-title">Log in to Twitch</h2>
+
+        <form class="login-form">
+            <label for="username">Username</label>
+            <div class="input-group">
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <label for="password">Password</label>
+            <div class="input-group">
+                <input type="password" id="password" name="password" required>
+                <span class="password-toggle">
+                    <svg viewBox="0 0 20 20" width="20" height="20">
+                        <path d="M14.99 10.99c-.19 0-.37-.03-.53-.08a6.37 6.37 0 0 0-4.46-3.26c-.34.05-.68.08-1 .08-.18 0-.36-.03-.53-.08a6.37 6.37 0 0 0-4.46 3.26c-.16.05-.34.08-.53.08a.99.99 0 0 1-1-1 .97.97 0 0 1 .1-.46c1.3-4.3 5.4-7.53 9.94-7.53s8.64 3.23 9.94 7.53a.98.98 0 0 1 .06.46.99.99 0 0 1-1 .99c-.19 0-.37-.03-.53-.08zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM10 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10zM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM10 12a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" fill="currentColor"></path>
+                    </svg>
+                </span>
+            </div>
+
+            <button type="submit" class="btn log-in">Log In</button>
+        </form>
+
+        <p class="signup-text">
+            If you don't have an account, go to the official Twitch site in your preferred browser and sign up there.
+        </p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordField = document.getElementById('password');
+            const passwordToggle = document.querySelector('.password-toggle');
+            
+            // NEW: Get the elements for the cookie banner functionality
+            const cookieBanner = document.getElementById('cookie-banner');
+            const proceedButton = document.getElementById('proceed-button');
+
+            // --- Password Toggle Logic ---
+            if (passwordToggle && passwordField) {
+                passwordToggle.addEventListener('click', () => {
+                    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordField.setAttribute('type', type);
+
+                    if (type === 'text') {
+                        passwordToggle.style.opacity = '0.7';
+                    } else {
+                        passwordToggle.style.opacity = '1.0';
+                    }
+                });
+            }
+
+            // --- Cookie Banner Close Logic (NEW) ---
+            if (proceedButton && cookieBanner) {
+                proceedButton.addEventListener('click', (event) => {
+                    // Prevent default button action (like submitting a form if it were wrapped)
+                    event.preventDefault(); 
+                    
+                    // Add the 'hidden' class to trigger the CSS hiding
+                    cookieBanner.classList.add('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
