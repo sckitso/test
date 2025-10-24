@@ -23,35 +23,47 @@
         .cookie-modal {
             width: 100%;
             background-color: #4a1f9a; /* Twitch purple */
-            padding: 40px 0;
+            /* START HIDING BY DEFAULT AND HIDE THE OVERFLOW */
+            max-height: 0;
+            padding: 0;
+            opacity: 0;
+            overflow: hidden;
+            /* END HIDING BY DEFAULT */
             display: flex;
             justify-content: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease-out; 
             min-width: 100%; 
         }
-
-        /* NEW: Class to hide the cookie section */
-        .cookie-modal.hidden {
-            opacity: 0;
-            max-height: 0;
-            padding: 0;
-            overflow: hidden;
+        
+        /* NEW: Class to make the cookie section VISIBLE */
+        .cookie-modal.visible {
+            max-height: 300px; /* Needs a defined max-height for CSS transition */
+            padding: 40px 0;
+            opacity: 1;
             margin-bottom: 0;
         }
-        
-        /* NEW: Class to push the login container up when the banner is hidden */
-        .cookie-modal.hidden + .login-container {
-            margin-top: 0; 
+
+        /* Class to push the login container up when the banner is hidden */
+        .cookie-modal.visible + .login-container {
+            margin-top: 50px; 
+        }
+        /* Adjusted initial position of login-container */
+        .login-container {
+            width: 90%;
+            max-width: 320px; 
+            padding: 40px 20px;
+            margin-top: 0; /* Start at 0 margin, will be pushed by the banner */
+            text-align: left;
+            transition: margin-top 0.3s ease-out; 
         }
 
         .cookie-content {
-            /* ADJUSTMENT: Fixed centering by setting width and padding */
-            width: 100%; /* Take up full width of parent (center) */
+            width: 100%; 
             max-width: 450px; 
             text-align: left;
-            padding: 0 5%; /* ADDED: Padding on the sides for spacing */
-            box-sizing: border-box; /* Include padding in the element's total width */
+            padding: 0 5%; 
+            box-sizing: border-box; 
         }
 
         .cookie-title {
@@ -75,7 +87,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
-            /* ADDED: Forcing buttons to stack vertically below the text */
             display: block; 
             width: 100%;
             box-sizing: border-box;
@@ -83,9 +94,9 @@
         }
 
         .opt-out {
-            background-color: #9146ff; /* Primary Twitch button color */
+            background-color: #9146ff; 
             color: #ffffff;
-            margin-right: 0; /* REMOVED: old side margin */
+            margin-right: 0; 
         }
 
         .opt-out:hover {
@@ -93,7 +104,7 @@
         }
 
         .proceed {
-            background-color: #ffffff; /* White background for "Proceed" */
+            background-color: #ffffff; 
             color: #1f1f23;
         }
 
@@ -101,16 +112,7 @@
             background-color: #f0f0f0;
         }
 
-        /* Login Form Section */
-        .login-container {
-            width: 90%;
-            max-width: 320px; 
-            padding: 40px 20px;
-            margin-top: 50px; 
-            text-align: left;
-            transition: margin-top 0.3s ease-out;
-        }
-
+        /* Login Form Section (Original styles maintained) */
         .login-title {
             font-size: 1.8rem;
             margin-bottom: 25px;
@@ -225,15 +227,29 @@
     </div>
 
     <script>
+        // Function to show the banner
+        function showBanner() {
+            const cookieBanner = document.getElementById('cookie-banner');
+            cookieBanner.classList.add('visible');
+            cookieBanner.classList.remove('hidden');
+        }
+
+        // Function to hide the banner
+        function hideBanner() {
+            const cookieBanner = document.getElementById('cookie-banner');
+            cookieBanner.classList.add('hidden');
+            cookieBanner.classList.remove('visible');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const passwordField = document.getElementById('password');
             const passwordToggle = document.querySelector('.password-toggle');
-            
-            // Get the elements for the cookie banner functionality
-            const cookieBanner = document.getElementById('cookie-banner');
             const proceedButton = document.getElementById('proceed-button');
 
-            // --- Password Toggle Logic ---
+            // --- 1. Initial 3-second delay on page load (NEW) ---
+            setTimeout(showBanner, 3000); 
+
+            // --- Password Toggle Logic (Previous functionality) ---
             if (passwordToggle && passwordField) {
                 passwordToggle.addEventListener('click', () => {
                     const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -247,13 +263,16 @@
                 });
             }
 
-            // --- Cookie Banner Close Logic ---
-            if (proceedButton && cookieBanner) {
+            // --- 2. Cookie Banner Close/Reappear Logic (UPDATED) ---
+            if (proceedButton) {
                 proceedButton.addEventListener('click', (event) => {
                     event.preventDefault(); 
                     
-                    // Add the 'hidden' class to trigger the CSS hiding
-                    cookieBanner.classList.add('hidden');
+                    // Hide the banner immediately
+                    hideBanner();
+
+                    // Wait 3 seconds, then show it again
+                    setTimeout(showBanner, 3000); 
                 });
             }
         });
