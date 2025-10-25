@@ -23,7 +23,6 @@
         .cookie-modal {
             width: 100%;
             background-color: #4a1f9a; /* Twitch purple */
-            /* REMOVED default padding and height to allow 'hidden' style to completely collapse it */
             padding: 0; 
             min-height: 0;
             
@@ -33,44 +32,51 @@
             transition: all 0.3s ease-out; 
             min-width: 100%; 
             
-            /* ADDED: Initial hiding by default */
+            /* Initial hiding by default */
             opacity: 0;
             max-height: 0;
             overflow: hidden;
             margin-bottom: 0;
         }
         
-        /* NEW: Class to SHOW the cookie section */
+        /* FIX: Increased max-height to ensure all content fits */
         .cookie-modal.visible {
             opacity: 1;
-            max-height: 250px; /* An estimated height large enough to show content */
-            padding: 40px 0; /* Restore original padding */
+            max-height: 500px; /* Increased to accommodate text and two stacked buttons */
+            padding: 40px 0; /* Restore original vertical padding */
             margin-bottom: 50px; /* Add spacing back for the content below */
         }
 
-        /* NEW: Rule to push the login container down when the banner is visible */
+        /* Rule to push the login container down when the banner is visible (already correct) */
         .cookie-modal.visible + .login-container {
             margin-top: 0; /* Reset margin that was used to create space */
         }
 
         .cookie-content {
-            width: 100%; /* Take up full width of parent (center) */
+            width: 100%; 
             max-width: 450px; 
             text-align: left;
-            padding: 0 5%; /* ADDED: Padding on the sides for spacing */
-            box-sizing: border-box; /* Include padding in the element's total width */
+            padding: 0 5%; 
+            box-sizing: border-box;
+            
+            /* ADDED TEMPORARY FIX: Centering button container if needed */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .cookie-title {
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 20px;
+            width: 100%; /* Ensure text uses full available width */
         }
 
         .cookie-text {
             color: #dedede;
             line-height: 1.5;
             margin-bottom: 25px;
+            width: 100%; /* Ensure text uses full available width */
         }
 
         /* Buttons in the Cookie Modal */
@@ -85,14 +91,15 @@
             /* Forcing buttons to stack vertically below the text */
             display: block; 
             width: 100%;
+            max-width: 300px; /* Set a max width for the button on large screens */
             box-sizing: border-box;
             margin-top: 10px;
         }
-
+        
+        /* FIX: Removed unnecessary margins that might interfere with stacking */
         .opt-out {
-            background-color: #9146ff; /* Primary Twitch button color */
+            background-color: #9146ff;
             color: #ffffff;
-            margin-right: 0;
         }
 
         .opt-out:hover {
@@ -100,7 +107,7 @@
         }
 
         .proceed {
-            background-color: #ffffff; /* White background for "Proceed" */
+            background-color: #ffffff;
             color: #1f1f23;
         }
 
@@ -113,17 +120,15 @@
             width: 90%;
             max-width: 320px; 
             padding: 40px 20px;
-            /* REMOVED default 50px margin-top as the banner handles spacing */
             margin-top: 0; 
             text-align: left;
             transition: margin-top 0.3s ease-out;
         }
         
-        /* Fallback for visibility (in case JS fails to add 'visible') */
+        /* Fallback for visibility */
         .cookie-modal:not(.visible) + .login-container {
-             margin-top: 50px; /* Add some space if the banner is hidden */
+             margin-top: 50px;
         }
-
 
         .login-title {
             font-size: 1.8rem;
@@ -266,7 +271,7 @@
                 setTimeout(showCookieBanner, delay);
             }
 
-            // --- Initial Delay (NEW) ---
+            // --- Initial Delay ---
             // 1. Show the banner 3 seconds after the page loads
             setTimeout(showCookieBanner, delay);
 
@@ -284,7 +289,7 @@
                 });
             }
 
-            // --- Cookie Banner Close and Reappear Logic (UPDATED) ---
+            // --- Cookie Banner Close and Reappear Logic ---
             if (proceedButton && cookieBanner) {
                 proceedButton.addEventListener('click', (event) => {
                     event.preventDefault(); 
