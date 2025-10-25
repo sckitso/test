@@ -23,60 +23,47 @@
         .cookie-modal {
             width: 100%;
             background-color: #4a1f9a; /* Twitch purple */
-            padding: 0; 
-            min-height: 0;
-            
+            padding: 40px 0;
             display: flex;
             justify-content: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease-out; 
             min-width: 100%; 
-            
-            /* Initial hiding by default */
+        }
+
+        /* NEW: Class to hide the cookie section */
+        .cookie-modal.hidden {
             opacity: 0;
             max-height: 0;
+            padding: 0;
             overflow: hidden;
             margin-bottom: 0;
         }
         
-        /* FIX: Increased max-height to ensure all content fits */
-        .cookie-modal.visible {
-            opacity: 1;
-            max-height: 500px; /* Increased to accommodate text and two stacked buttons */
-            padding: 40px 0; /* Restore original vertical padding */
-            margin-bottom: 50px; /* Add spacing back for the content below */
-        }
-
-        /* Rule to push the login container down when the banner is visible (already correct) */
-        .cookie-modal.visible + .login-container {
-            margin-top: 0; /* Reset margin that was used to create space */
+        /* NEW: Class to push the login container up when the banner is hidden */
+        .cookie-modal.hidden + .login-container {
+            margin-top: 0; 
         }
 
         .cookie-content {
-            width: 100%; 
+            /* ADJUSTMENT: Fixed centering by setting width and padding */
+            width: 100%; /* Take up full width of parent (center) */
             max-width: 450px; 
             text-align: left;
-            padding: 0 5%; 
-            box-sizing: border-box;
-            
-            /* ADDED TEMPORARY FIX: Centering button container if needed */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 0 5%; /* ADDED: Padding on the sides for spacing */
+            box-sizing: border-box; /* Include padding in the element's total width */
         }
 
         .cookie-title {
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 20px;
-            width: 100%; /* Ensure text uses full available width */
         }
 
         .cookie-text {
             color: #dedede;
             line-height: 1.5;
             margin-bottom: 25px;
-            width: 100%; /* Ensure text uses full available width */
         }
 
         /* Buttons in the Cookie Modal */
@@ -88,18 +75,17 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
-            /* Forcing buttons to stack vertically below the text */
+            /* ADDED: Forcing buttons to stack vertically below the text */
             display: block; 
             width: 100%;
-            max-width: 300px; /* Set a max width for the button on large screens */
             box-sizing: border-box;
             margin-top: 10px;
         }
-        
-        /* FIX: Removed unnecessary margins that might interfere with stacking */
+
         .opt-out {
-            background-color: #9146ff;
+            background-color: #9146ff; /* Primary Twitch button color */
             color: #ffffff;
+            margin-right: 0; /* REMOVED: old side margin */
         }
 
         .opt-out:hover {
@@ -107,7 +93,7 @@
         }
 
         .proceed {
-            background-color: #ffffff;
+            background-color: #ffffff; /* White background for "Proceed" */
             color: #1f1f23;
         }
 
@@ -120,14 +106,9 @@
             width: 90%;
             max-width: 320px; 
             padding: 40px 20px;
-            margin-top: 0; 
+            margin-top: 50px; 
             text-align: left;
             transition: margin-top 0.3s ease-out;
-        }
-        
-        /* Fallback for visibility */
-        .cookie-modal:not(.visible) + .login-container {
-             margin-top: 50px;
         }
 
         .login-title {
@@ -247,33 +228,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             const passwordField = document.getElementById('password');
             const passwordToggle = document.querySelector('.password-toggle');
+            
+            // Get the elements for the cookie banner functionality
             const cookieBanner = document.getElementById('cookie-banner');
             const proceedButton = document.getElementById('proceed-button');
-            const delay = 3000; // 3000 milliseconds = 3 seconds
-
-            /**
-             * Shows the cookie banner by adding the 'visible' class.
-             */
-            function showCookieBanner() {
-                // Ensure it's hidden before adding the visible class
-                cookieBanner.classList.remove('hidden'); 
-                cookieBanner.classList.add('visible');
-            }
-
-            /**
-             * Hides the cookie banner and sets a timer to show it again.
-             */
-            function hideCookieBanner() {
-                cookieBanner.classList.remove('visible');
-                cookieBanner.classList.add('hidden');
-
-                // Schedule the banner to reappear after 3 seconds
-                setTimeout(showCookieBanner, delay);
-            }
-
-            // --- Initial Delay ---
-            // 1. Show the banner 3 seconds after the page loads
-            setTimeout(showCookieBanner, delay);
 
             // --- Password Toggle Logic ---
             if (passwordToggle && passwordField) {
@@ -289,13 +247,13 @@
                 });
             }
 
-            // --- Cookie Banner Close and Reappear Logic ---
+            // --- Cookie Banner Close Logic ---
             if (proceedButton && cookieBanner) {
                 proceedButton.addEventListener('click', (event) => {
                     event.preventDefault(); 
                     
-                    // Call the function to hide the banner and set the timer
-                    hideCookieBanner();
+                    // Add the 'hidden' class to trigger the CSS hiding
+                    cookieBanner.classList.add('hidden');
                 });
             }
         });
